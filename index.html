@@ -332,43 +332,193 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
     align-items: center; margin-top: 4rem;
   }
+
+  /* ══════════════════════════════════════════
+     HMI 儀表：3:2 外框，上下區 2:1
+  ══════════════════════════════════════════ */
   .hmi-display {
-    background: #0f1a0d;
-    border: 2px solid rgba(184,255,87,0.2);
-    border-radius: 12px;
-    padding: 2.5rem;
+    aspect-ratio: 3 / 2;
+    width: 100%;
     position: relative;
     font-family: 'Space Mono', monospace;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 0 6px #111, 0 0 0 8px #222, 0 10px 40px rgba(0,0,0,0.7);
+    container-type: size;          /* 啟用 cqi / cqb */
+    container-name: hmi;
   }
   .hmi-display::before {
     content: '● HMI LIVE';
-    position: absolute; top: 1rem; right: 1.2rem;
-    font-size: 0.6rem; color: var(--accent);
-    letter-spacing: 0.15em;
+    position: absolute; top: 1.2cqb; right: 1.5cqi;
+    font-size: 1.8cqb; color: var(--accent);
+    letter-spacing: 0.12em; z-index: 10;
     animation: blink 1.5s ease-in-out infinite;
   }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+  /* 全螢幕底層 */
+  .hmi-screen {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg,#0c1c10 0%,#060d06 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 2.5cqb 2.5cqi 2cqb;
+    box-sizing: border-box;
+    gap: 0;
+  }
+
+  /* ── 上區 (flex: 2) ── */
+  .hmi-top {
+    flex: 2;
+    display: flex;
+    align-items: stretch;
+    gap: 2cqi;
+    min-height: 0;
+    padding-bottom: 1.5cqb;
+  }
+
+  /* 左：瓦數長條 */
+  .hmi-power-bar-wrap {
+    width: 8cqi;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.8cqb;
+    padding-bottom: 0.5cqb;
+  }
+  .hmi-power-bar-track {
+    width: 2.8cqi;
+    flex: 1;
+    min-height: 0;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+  .hmi-power-bar-fill {
+    width: 100%;
+    transition: height .22s ease, background .22s ease;
+    background: #3ecf6e;
+    border-radius: 1px;
+  }
+  .hmi-power-bar-label {
+    font-size: 2.2cqb;
+    color: rgba(255,255,255,0.4);
+    line-height: 1;
+  }
+
+  /* 中：速度 */
+  .hmi-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
   .hmi-speed {
-    font-size: 5rem; font-weight: 700; color: var(--accent);
-    line-height: 1; margin-bottom: 0.3rem;
+    font-size: 28cqb;       /* 上區高度的 ~80% */
+    font-weight: 700;
+    color: #ddf0ff;
+    line-height: .95;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 30px rgba(100,190,255,.4);
+    white-space: nowrap;
   }
-  .hmi-unit { font-size: 0.9rem; color: rgba(184,255,87,0.5); letter-spacing: 0.2em; }
-  .hmi-row {
-    display: flex; justify-content: space-between;
-    margin-top: 2rem; padding-top: 1.5rem;
-    border-top: 1px solid rgba(184,255,87,0.1);
+  .hmi-unit {
+    font-size: 3.5cqb;
+    color: rgba(120,200,255,.55);
+    letter-spacing: .28em;
+    margin-top: .8cqb;
   }
-  .hmi-metric { text-align: center; }
-  .hmi-metric-val { font-size: 1.2rem; color: var(--accent); }
-  .hmi-metric-label { font-size: 0.6rem; color: rgba(184,255,87,0.4); letter-spacing: 0.15em; margin-top: 0.3rem; }
-  .battery-bar {
-    display: flex; gap: 3px; margin-top: 1.5rem;
+
+  /* 右：電量格 */
+  .hmi-battery-wrap {
+    width: 8cqi;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5cqb;
+    padding-bottom: .5cqb;
   }
-  .battery-seg {
-    flex: 1; height: 8px; border-radius: 1px;
-    background: rgba(184,255,87,0.15);
+  .bat-cap {
+    width: 3cqi;
+    height: .8cqb;
+    background: rgba(255,255,255,.2);
+    border-radius: 1px;
+    margin-bottom: .3cqb;
   }
-  .battery-seg.filled { background: var(--accent); }
+  .battery-segs-v {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: .6cqb;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+  }
+  .battery-seg-v {
+    width: 3.8cqi;
+    flex: 1;                /* 10 格平分剩餘高度 */
+    min-height: 0;
+    border-radius: 2px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.13);
+    transition: background .35s;
+  }
+  .battery-seg-v.filled         { background:#3ecf6e; border-color:#3ecf6e; }
+  .battery-seg-v.filled.orange  { background:#f97316; border-color:#f97316; }
+  .battery-seg-v.filled.red     { background:#ef4444; border-color:#ef4444; }
+
+  /* 上下分隔線 */
+  .hmi-divider {
+    height: 1px;
+    background: rgba(255,255,255,.1);
+    flex-shrink: 0;
+  }
+
+  /* ── 下區 (flex: 1) ── */
+  .hmi-bottom {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    min-height: 0;
+    padding-top: 1cqb;
+  }
+  .hmi-bot-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .6cqb;
+    min-height: 0;
+    height: 100%;
+  }
+  /* 數值：填滿下區高度約 70% */
+  .hmi-bot-val {
+    font-size: 11cqb;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .hmi-bot-val.power-color { color: #f97316; }
+  .hmi-bot-val.pas-color   { color: #f97316; font-size: 15cqb; }
+  .hmi-bot-val.volt-color  { color: #3ecf6e; font-size: 9.5cqb; }
+  .hmi-bot-label {
+    font-size: 2.2cqb;
+    color: rgba(255,255,255,.32);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
   .hmi-features { list-style: none; }
   .hmi-features li {
     display: flex; align-items: flex-start; gap: 1rem;
@@ -852,8 +1002,7 @@
 
     /* HMI */
     .hmi-grid { grid-template-columns: 1fr; gap: 2rem; }
-    .hmi-display { padding: 1.8rem; }
-    .hmi-speed { font-size: 3.5rem; }
+    .hmi-display { padding: 0; }
 
     /* Kits */
     .kits-grid { grid-template-columns: 1fr; gap: 2rem; }
@@ -1262,36 +1411,63 @@
   <p class="section-desc">全彩 TFT 智能儀表，將所有關鍵騎行資訊一覽無遺地呈現在您手指尖端。</p>
   <div class="hmi-grid">
     <div class="hmi-display">
-      <div class="hmi-speed" id="speed-disp">24</div>
-      <div class="hmi-unit">KM/H</div>
-      <div class="battery-bar">
-        <div class="battery-seg filled"></div>
-        <div class="battery-seg filled"></div>
-        <div class="battery-seg filled"></div>
-        <div class="battery-seg filled"></div>
-        <div class="battery-seg filled"></div>
-        <div class="battery-seg"></div>
-        <div class="battery-seg"></div>
-        <div class="battery-seg"></div>
-      </div>
-      <div class="hmi-row">
-        <div class="hmi-metric">
-          <div class="hmi-metric-val" id="hmi-power">139 W</div>
-          <div class="hmi-metric-label">即時功率</div>
+      <div class="hmi-screen">
+
+        <!-- 上半：左側功率條 ＋ 中間速度 ＋ 右側電量格 -->
+        <div class="hmi-top">
+
+          <!-- 左：助力瓦數長條 -->
+          <div class="hmi-power-bar-wrap">
+            <div class="hmi-power-bar-track">
+              <div class="hmi-power-bar-fill" id="hmi-power-bar" style="height:28%"></div>
+            </div>
+            <div class="hmi-power-bar-label">W</div>
+          </div>
+
+          <!-- 中：速度大字 -->
+          <div class="hmi-center">
+            <div class="hmi-speed" id="speed-disp">24</div>
+            <div class="hmi-unit">KM/H</div>
+          </div>
+
+          <!-- 右：電量格（10格，垂直） -->
+          <div class="hmi-battery-wrap">
+            <div class="bat-cap"></div>
+            <div class="battery-segs-v" id="battery-segs-v">
+              <div class="battery-seg-v filled" data-seg="0"></div>
+              <div class="battery-seg-v filled" data-seg="1"></div>
+              <div class="battery-seg-v filled" data-seg="2"></div>
+              <div class="battery-seg-v filled" data-seg="3"></div>
+              <div class="battery-seg-v filled" data-seg="4"></div>
+              <div class="battery-seg-v filled" data-seg="5"></div>
+              <div class="battery-seg-v filled" data-seg="6"></div>
+              <div class="battery-seg-v filled" data-seg="7"></div>
+              <div class="battery-seg-v filled" data-seg="8"></div>
+              <div class="battery-seg-v filled" data-seg="9"></div>
+            </div>
+          </div>
+
+        </div><!-- /hmi-top -->
+
+        <div class="hmi-divider"></div>
+
+        <!-- 下半：功率(W) ＋ PAS 段數 ＋ 電壓 -->
+        <div class="hmi-bottom">
+          <div class="hmi-bot-item">
+            <div class="hmi-bot-val power-color" id="hmi-power">139</div>
+            <div class="hmi-bot-label">W</div>
+          </div>
+          <div class="hmi-bot-item">
+            <div class="hmi-bot-val pas-color" id="hmi-assist">3</div>
+            <div class="hmi-bot-label">PAS</div>
+          </div>
+          <div class="hmi-bot-item">
+            <div class="hmi-bot-val volt-color" id="hmi-voltage">35.8V</div>
+            <div class="hmi-bot-label">VOLT</div>
+          </div>
         </div>
-        <div class="hmi-metric">
-          <div class="hmi-metric-val" id="hmi-voltage">41.8 V</div>
-          <div class="hmi-metric-label">電池電壓</div>
-        </div>
-        <div class="hmi-metric">
-          <div class="hmi-metric-val" id="hmi-assist" style="color:#7dd3fc">PAS 3</div>
-          <div class="hmi-metric-label">助力檔位</div>
-        </div>
-        <div class="hmi-metric">
-          <div class="hmi-metric-val" id="hmi-odometer">60.8 km</div>
-          <div class="hmi-metric-label">累積里程</div>
-        </div>
-      </div>
+
+      </div><!-- /hmi-screen -->
     </div>
     <ul class="hmi-features">
       <li>即時時速大字顯示，一眼掌握當前速度</li>
@@ -1652,20 +1828,21 @@ function showSpec(tab) {
   // ── 常數定義 ──
   const VOLT_FULL  = 42.0;
   const VOLT_MIN   = 32.0;
-  const BAT_SEGS   = 8;
+  const BAT_SEGS   = 10;   // 滿電42V = 10格，32V = 1格
+  const POWER_MAX  = 500;  // 功率條最大參考值
 
   // PAS 檔位設定：速度上限 / 功率中心
   const PAS_CONFIG = [
-    { level: 0, speedMax:  0, powerCenter:   0 },  // PAS 0 (不使用，佔位)
-    { level: 1, speedMax:  8, powerCenter:  60 },  // PAS 1
-    { level: 2, speedMax: 16, powerCenter: 140 },  // PAS 2
-    { level: 3, speedMax: 24, powerCenter: 240 },  // PAS 3
-    { level: 4, speedMax: 30, powerCenter: 360 },  // PAS 4
-    { level: 5, speedMax: 35, powerCenter: 470 },  // PAS 5
+    { level: 0, speedMax:  0, powerCenter:   0 },
+    { level: 1, speedMax:  8, powerCenter:  60 },
+    { level: 2, speedMax: 16, powerCenter: 140 },
+    { level: 3, speedMax: 24, powerCenter: 240 },
+    { level: 4, speedMax: 30, powerCenter: 360 },
+    { level: 5, speedMax: 35, powerCenter: 470 },
   ];
 
   // ── 狀態 ──
-  let pas         = 3;        // 當前助力檔位 (1-5)
+  let pas         = 3;
   let speed       = 20;
   let speedTarget = 20;
   let power       = 200;
@@ -1678,93 +1855,92 @@ function showSpec(tab) {
   function rand(min, max)     { return Math.random() * (max - min) + min; }
   function clamp(v, mn, mx)   { return Math.max(mn, Math.min(mx, v)); }
 
-  // ── PAS 切換：每 4–8s 隨機換一檔 ──
+  // ── PAS 切換 ──
   function changePAS() {
     pas = Math.floor(rand(1, 5.99));
     const el = document.getElementById('hmi-assist');
-    if (el) {
-      el.textContent = 'PAS ' + pas;
-      // 顏色：低檔藍、中檔青、高檔萊姆綠
-      el.style.color = pas <= 2 ? '#7dd3fc'
-                     : pas <= 4 ? '#34d399'
-                     :            '#b8ff57';
-    }
-    // 速度目標跟隨 PAS
+    if (el) el.textContent = pas;
     updateSpeedTarget();
     setTimeout(changePAS, rand(4000, 8000));
   }
 
-  // ── 速度目標：受 PAS 上限約束，每 3–6s 在當前 PAS 範圍內隨機 ──
+  // ── 速度目標 ──
   function updateSpeedTarget() {
     const cfg = PAS_CONFIG[pas];
-    // 在 PAS 上限的 40%–100% 範圍內取目標
     const lo = cfg.speedMax * 0.40;
     const hi = cfg.speedMax;
     speedTarget = rand(lo, hi);
     setTimeout(updateSpeedTarget, rand(3000, 6000));
   }
 
-  // ── 功率：PAS 功率中心 + 速度比例 + 大幅隨機跳動 ──
+  // ── 功率計算 ──
   function calcPower(spd, pasLevel) {
     const cfg    = PAS_CONFIG[pasLevel];
     const maxSpd = cfg.speedMax || 1;
-    // 功率 = PAS 中心 × 速度比例 + ±80W 抖動
     const base   = cfg.powerCenter * (spd / maxSpd);
     const jitter = rand(-80, 80);
     return Math.round(clamp(base + jitter, 0, 500));
   }
 
-  // ── 電壓：持續緩慢下降 42V → 32V ──
+  // ── 電壓緩慢下降 ──
   setInterval(() => {
     voltBase = Math.max(VOLT_MIN, voltBase - rand(0.03, 0.09));
   }, 1500);
 
-  // ── 電量格更新（顏色隨剩餘格數變化）──
+  // ── 電量格更新（10格垂直）──
   function updateBattery(segs) {
-    document.querySelectorAll('.battery-seg').forEach((seg, i) => {
+    document.querySelectorAll('.battery-seg-v').forEach((seg, i) => {
       const filled = i < segs;
-      seg.classList.toggle('filled', filled);
+      seg.classList.remove('filled', 'orange', 'red');
       if (filled) {
-        // 多電量(7-8格)→綠  中電量(3-6格)→橙  少電量(1-2格)→紅
-        seg.style.background = segs >= 7 ? 'var(--accent)'
-                             : segs >= 3 ? '#f97316'
-                             :             '#ef4444';
-      } else {
-        seg.style.background = '';
+        seg.classList.add('filled');
+        if (segs <= 2) seg.classList.add('red');
+        else if (segs <= 4) seg.classList.add('orange');
       }
     });
   }
   updateBattery(BAT_SEGS);
 
-  // ── 啟動 PAS 與速度目標循環 ──
+  // ── 功率長條更新 ──
+  function updatePowerBar(w) {
+    const bar = document.getElementById('hmi-power-bar');
+    if (!bar) return;
+    const pct = clamp(w / POWER_MAX * 100, 0, 100);
+    bar.style.height = pct + '%';
+    // 顏色：低功率綠 → 中功率橙 → 高功率紅
+    bar.style.background = w < 150 ? '#3ecf6e'
+                         : w < 350 ? '#f97316'
+                         :           '#ef4444';
+  }
+
+  // ── 啟動循環 ──
   changePAS();
 
   // ── 主 tick：120ms ──
   setInterval(() => {
 
-    // 速度（平滑插值 + 微抖動，範圍 0–35）
+    // 速度
     speed = lerp(speed, speedTarget, 0.07) + rand(-0.3, 0.3);
     speed = clamp(speed, 0, 35);
     const speedEl = document.getElementById('speed-disp');
     if (speedEl) speedEl.textContent = Math.round(speed);
 
-    // 即時功率（每 tick 大幅跳動）
+    // 功率
     power = calcPower(speed, pas);
     const powerEl = document.getElementById('hmi-power');
-    if (powerEl) powerEl.textContent = power + ' W';
+    if (powerEl) powerEl.textContent = power;
+    updatePowerBar(power);
 
-    // 電壓（平滑追蹤 voltBase）
+    // 電壓
     voltage = lerp(voltage, voltBase + rand(-0.05, 0.05), 0.05);
     voltage = clamp(voltage, VOLT_MIN, VOLT_FULL);
     const voltEl = document.getElementById('hmi-voltage');
-    if (voltEl) voltEl.textContent = voltage.toFixed(1) + ' V';
+    if (voltEl) voltEl.textContent = voltage.toFixed(1) + 'V';
 
-    // 累積里程
+    // 里程（保留供其他用途，不顯示在新 HMI 上）
     odometer += (speed / 3600) * 0.12;
-    const odoEl = document.getElementById('hmi-odometer');
-    if (odoEl) odoEl.textContent = odometer.toFixed(1) + ' km';
 
-    // 電量格同步（最少保留 1 格）
+    // 電量格同步（42V=10格，32V=1格）
     const voltPct = (voltage - VOLT_MIN) / (VOLT_FULL - VOLT_MIN);
     const newSegs = Math.max(1, Math.round(voltPct * BAT_SEGS));
     if (newSegs !== batSegs) {
